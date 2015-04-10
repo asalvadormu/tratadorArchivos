@@ -15,6 +15,10 @@ import java.util.LinkedList;
 
 /**
  *
+ * Obtiene las caracteristicas a partir de un directorio con archivos de datos en bruto.
+ * En argumentos se añade el nombre del directorio y el indicador de tipo
+ * de salida.
+ * 
  * @author SAMUAN
  */
 public class TratadorArchivos {
