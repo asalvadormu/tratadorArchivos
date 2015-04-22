@@ -34,7 +34,10 @@ public class TratadorArchivos {
         double gravedad=9.8066;
         LinkedList<Muestra> listaCompleta=new LinkedList<Muestra>();
         int tiposalida=0;// 1 2 3 4 sentarse salto golpe caida
-        
+        int contadorArchivo=0;
+        int contador=0;
+        int contadorpico=0;
+        int contadorTiempo=0;
         
         //capturar argumentos
         //directorio de entrada
@@ -57,7 +60,6 @@ public class TratadorArchivos {
                 
                 try {
             // Apertura del fichero y creacion de BufferedReader para poder
-            // hacer una lectura comoda (disponer del metodo readLine()).
                     String nombrearchivo=directorio+"/"+ficheros[x].getName();
                     archivo = new File (nombrearchivo);
                     fr = new FileReader (archivo);
@@ -83,7 +85,7 @@ public class TratadorArchivos {
                             }
                             acele= Math.sqrt(acele);          
                             
-                    //  System.out.println(valoresD[0]+" "+acele);
+                     // System.out.println(valoresD[0]+" "+acele);
                    // resultado=resultado+valoresD[0]+","+acele+"\r\n";
                             listaCompleta.add( new Muestra((long)valoresD[0],acele));     
                         }
@@ -96,10 +98,16 @@ public class TratadorArchivos {
                     capturar=false;
                      //terminado el proceso de archivo de entrada
                      //Iniciar monitor para comprobar si es caida u otra cosa.
+                    contadorArchivo++;
                     Monitor monitor=new Monitor();
-                    monitor.tratar(listaCompleta);            
+                    monitor.tratar(listaCompleta);   
+                    if( monitor.getHayPico() ) contadorpico++; 
+                    if( monitor.getHayTiempo() ) contadorTiempo++;
+                    System.out.println( " maximo pico: "+monitor.getMaximoPico());
+                    
                     double[] resul= monitor.getResultadoCara();   
                     if(resul!=null){
+                        contador++; //cuenta cuantos devuelven resultado.
                         for(double valor:resul){
                             resultado=resultado+""+valor+", ";
                         }
@@ -141,8 +149,14 @@ public class TratadorArchivos {
                     }catch (Exception e2){ 
                         e2.printStackTrace();
                     }
-                }                               
+                }    
+                
+                
             }
+            System.out.println("Contador archivo "+contadorArchivo);
+            System.out.println("Contador pico "+contadorpico);
+            System.out.println("contador tiempo "+contadorTiempo);
+            System.out.println("Contador test "+contador);  
         }else { 
 
 

@@ -16,11 +16,15 @@ public class Monitor {
     private LinkedList<Muestra> lista; //
     private int tamaLista=500;
     private String estado="muestreo";
-    private double umbralGravedad=2.5;
+    private double umbralGravedad=2.1;
     private long pt=0; //peak time
     private long contadorTiempo=0;
     Muestra[] datos=null;
     private double[] resultadoCara;
+    
+    private boolean haypico=false;
+    private double maximoPico=0;
+    private boolean hayTiempo=false;
     
     Monitor(){
         System.out.println("Comienzo monitor");
@@ -34,19 +38,27 @@ public class Monitor {
         
         //para cada dato hacer proceso 
         System.out.println("Monitor.tratar "+flujoEntrada.size());
+        
         for(Muestra muestra:flujoEntrada){
             cargarMuestra(muestra);
             double modulo=muestra.getAceleracion();
             long tiempo=muestra.getTiempo();
+            
+            //averiguar cual es el máximo pico de estos datos.
+            if(muestra.getAceleracion()>maximoPico) maximoPico=muestra.getAceleracion();
         
             if(estado.equals("muestreo")){
-                if(muestra.getAceleracion()>umbralGravedad) iniciarPostpeak(muestra.getTiempo());
+                if(muestra.getAceleracion()>umbralGravedad){
+                    iniciarPostpeak(muestra.getTiempo());
+                    haypico=true;
+                }
             }
             
             if(estado.equals("postpeak")){
                 contadorTiempo=tiempo-pt;
                 if(modulo>umbralGravedad) iniciarPostpeak(tiempo);
                 if(contadorTiempo>2500000000l){
+                    hayTiempo=true;
                     //generar array de valores.           
                     datos=new Muestra[ lista.size()];
                     lista.toArray(datos);
@@ -128,7 +140,17 @@ public class Monitor {
         return resultadoCara;
     }
     
+    public boolean getHayPico(){
+        return haypico;
+    }
     
+    public double getMaximoPico(){
+        return maximoPico;
+    }
+    
+    public  boolean getHayTiempo() {
+        return hayTiempo;
+     }
     
     private void cargarMuestra(Muestra muestra){
         lista.add(muestra);
@@ -169,5 +191,7 @@ public class Monitor {
              System.out.println( "Muestra "+i+" tiempo: +"+mu.getTiempo()+" acele: "+mu.getAceleracion());
         }
     }
+
+   
     
 }

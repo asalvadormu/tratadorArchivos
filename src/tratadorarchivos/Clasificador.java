@@ -110,15 +110,6 @@ public class Clasificador {
      * @return
      */
     private void calcularIE(){
-       for(int i=0;i<valores.length;i++){
-            long eltiempo=valores[i].getTiempo();
-
-            if(eltiempo>=peaktimemas){
-                marcadorPeakMas=i;
-                break;
-            }
-        }
-
         for(int j=marcadorPeakMas; j>=marcadorPeak; j--){
             if(valores[j].getAceleracion()>1.5) {
                 valor_IE =valores[j].getTiempo();
@@ -197,7 +188,8 @@ public class Clasificador {
     private double calcularIDI(){
         long tiempoFinal=valores[marcadorIE].getTiempo();
         long tiempoInicio=valores[marcadorIS].getTiempo();
-        return tiempoFinal-tiempoInicio; //nanosegundos.
+        long tiempoAdevolver=(tiempoFinal-tiempoInicio)/1000000;
+        return tiempoAdevolver; //nanosegundos.
     }
 
     /**
@@ -252,7 +244,7 @@ public class Clasificador {
     /**
      * Calcula el índice de duración de pico. PDI.
      * Diferencia entre el PS comienzo de pico y PE fin de pico.
-     * PS es el tiempo último muestreo <1.5g antes del pico
+     * PS es el tiempo último muestreo <1.8g antes del pico
      * PE es el tiempo del primer muestreo <1.8g despues del pico.
      *
      * @return el valor de PDI en segundos.
@@ -261,7 +253,7 @@ public class Clasificador {
         int marcaPS=0;
         int marcaPE=valores.length-1;
         for(int i=marcadorPeak-1;i>=0;i--){
-           if( valores[i].getAceleracion() <1.5){
+           if( valores[i].getAceleracion() <1.8){
                marcaPS=i;
                break;
            }
@@ -272,7 +264,9 @@ public class Clasificador {
                 break;
             }
         }
-        return  valores[marcaPE].getAceleracion()-valores[marcaPS].getAceleracion();
+        double valor=valores[marcaPE].getTiempo()-valores[marcaPS].getTiempo();
+        valor=valor/1000000; //pasar a milisegundos.
+        return  valor;
     }
 
     /**
@@ -434,6 +428,7 @@ public class Clasificador {
                 if(difLimite<200000000){
                     if(valores[marcaActual].getAceleracion()>1.6) {
                         contadorPasos++;
+                        tiempoPasoAnterior=valores[marcaFinValle].getTiempo();
                         modo="inicio";
                     } else{
                         //no hago nada
